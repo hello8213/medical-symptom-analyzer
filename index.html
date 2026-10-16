@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#eaf4f8">
+  <title>医学辅助分析器</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="hero">
+  <div class="container">
+    <div class="eyebrow">MEDICAL INFORMATION ASSISTANT</div>
+    <h1>医学辅助分析器</h1>
+    <p class="subtitle">
+      选择症状，了解可能的疾病、发病原因、检查方式与循证治疗资料。
+    </p>
+    <div class="notice">
+      <strong>医疗安全提示：</strong>
+      本工具仅用于健康教育，不能确诊或替代医生。
+      如果出现严重胸痛、明显呼吸困难、意识异常或突然出现的卒中征象，
+      请立即拨打当地急救电话。在加拿大和美国，急救电话为 911。
+    </div>
+  </div>
+</header>
+<main class="container">
+  <section class="panel">
+    <div class="section-title">
+      <span class="step">01</span>
+      <div>
+        <h2>基本信息</h2>
+        <p>帮助系统了解基本背景</p>
+      </div>
+    </div>
+    <div class="form-grid">
+      <label>
+        年龄
+        <input id="age" type="number" min="0" max="120"
+               placeholder="请输入年龄" required>
+      </label>
+      <label>
+        性别
+        <select id="sex">
+          <option value="unspecified">不愿透露 / 不确定</option>
+          <option value="female">女</option>
+          <option value="male">男</option>
+          <option value="other">其他</option>
+        </select>
+      </label>
+      <label class="wide">
+        症状持续时间
+        <select id="duration">
+          <option value="unknown">不确定</option>
+          <option value="hours">数小时</option>
+          <option value="1-3 days">1–3 天</option>
+          <option value="4-7 days">4–7 天</option>
+          <option value="more than a week">超过一周</option>
+          <option value="recurrent">反复出现</option>
+        </select>
+      </label>
+    </div>
+  </section>
+  <section class="panel">
+    <div class="section-title">
+      <span class="step">02</span>
+      <div>
+        <h2>选择症状</h2>
+        <p>按身体系统分类，可同时选择多个标签</p>
+      </div>
+    </div>
+    {% for system, codes in systems.items() %}
+    <div class="system-group">
+      <h3>{{ system }}</h3>
+      <div class="symptom-grid">
+        {% for code in codes %}
+        <label class="symptom">
+          <input type="checkbox" name="symptom" value="{{ code }}">
+          <span>{{ symptoms[code] }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </section>
+  <section class="panel urgent-panel">
+    <div class="section-title">
+      <span class="step warning-step">03</span>
+      <div>
+        <h2>危险信号检查</h2>
+        <p>如果正在发生严重症状，不要等待网页分析</p>
+      </div>
+    </div>
+    <div class="symptom-grid">
+      {% for code, label in red_flags.items() %}
+      <label class="symptom danger">
+        <input type="checkbox" name="redflag" value="{{ code }}">
+        <span>{{ label }}</span>
+      </label>
+      {% endfor %}
+    </div>
+  </section>
+  <div class="actions">
+    <button id="analyzeBtn" type="button">分析症状</button>
+    <button id="resetBtn" class="secondary" type="button">清空重选</button>
+  </div>
+  <p id="error" class="error" role="alert"></p>
+  <section id="results" aria-live="polite"></section>
+  <footer>
+    <h3>关于本工具</h3>
+    <p>
+      当前版本使用有限的示例疾病资料和简单的症状重合规则。
+      未匹配到疾病不代表没有疾病，匹配到某种疾病也不代表确诊。
+      请勿根据结果自行开始、停止或更改处方药。
+    </p>
+    <p>医学参考资料的最终适用性应由合格的医疗专业人员审核。</p>
+  </footer>
+</main>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
+
